@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💀 Captain RPG — Twitch</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --noir:        #060608;
+  --charbon:     #0e0e12;
+  --cendre:      #16161c;
+  --bord:        #2a2030;
+  --bord-vif:    #4a3050;
+  --sang:        #8b0000;
+  --sang-vif:    #c0392b;
+  --or:          #c9a84c;
+  --or-vif:      #f0d080;
+  --or-pale:     #fef3c7;
+  --texte:       #d4c4b0;
+  --texte-pale:  #7a6a5a;
+  --spectral:    #4a7a8a;
+  --epique:      #9b59b6;
+  --legendaire:  #f39c12;
+  --primordial:  #e74c3c;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--noir); color: var(--texte); font-family: 'Crimson Pro', Georgia, serif; overflow-x: hidden; }
+
+/* ── FOND ── */
+.bg-layer { position:fixed; inset:0; pointer-events:none; z-index:0; }
+.bg-layer::before {
+  content:''; position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 30%, rgba(139,0,0,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 80% at 85% 70%, rgba(74,122,138,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 50% 10%, rgba(155,89,182,0.04) 0%, transparent 50%);
+  animation: breathe 8s ease-in-out infinite alternate;
+}
+@keyframes breathe { from{opacity:.6} to{opacity:1} }
+
+.particles { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.particle {
+  position:absolute; width:2px; height:2px;
+  background:rgba(201,168,76,0.4); border-radius:50%;
+  animation: floatup linear infinite;
+}
+@keyframes floatup {
+  0%   { transform:translateY(100vh) translateX(0) scale(0); opacity:0; }
+  10%  { opacity:1; }
+  90%  { opacity:.6; }
+  100% { transform:translateY(-10vh) translateX(var(--dx,20px)) scale(1); opacity:0; }
+}
+
+/* ── NAV ── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(6,6,8,0.9); backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--bord);
+  padding:.7rem 1.5rem;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:1rem;
+}
+.nav-logo { font-family:'Cinzel Decorative',serif; font-size:.85rem; color:var(--or); letter-spacing:.1em; white-space:nowrap; }
+.nav-links { display:flex; gap:1.2rem; list-style:none; flex-wrap:wrap; }
+.nav-links a { font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:.15em; color:var(--texte-pale); text-decoration:none; transition:color .2s; }
+.nav-links a:hover, .nav-links a.active { color:var(--or); }
+
+/* ── WRAP ── */
+.wrap { position:relative; z-index:1; max-width:1000px; margin:0 auto; padding:0 1.5rem; }
+
+/* ── HERO ── */
+.hero {
+  min-height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center;
+  padding:5rem 1.5rem 3rem; position:relative;
+}
+.hero-rune {
+  font-size:clamp(3rem,10vw,5.5rem); display:block; margin-bottom:1.5rem;
+  animation:rune-pulse 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px rgba(139,0,0,.8)) drop-shadow(0 0 40px rgba(139,0,0,.4));
+}
+@keyframes rune-pulse {
+  0%,100%{filter:drop-shadow(0 0 20px rgba(139,0,0,.8)) drop-shadow(0 0 40px rgba(139,0,0,.4))}
+  50%    {filter:drop-shadow(0 0 30px rgba(192,57,43,1)) drop-shadow(0 0 60px rgba(139,0,0,.6))}
+}
+.hero-eyebrow { font-family:'Cinzel',serif; font-size:.78rem; letter-spacing:.4em; color:var(--sang-vif); text-transform:uppercase; margin-bottom:.8rem; animation:fadeDown 1s both; }
+.hero-title { font-family:'Cinzel Decorative',serif; font-size:clamp(2.2rem,8vw,5rem); font-weight:900; color:var(--or); text-shadow:0 0 40px rgba(201,168,76,.5),0 4px 8px rgba(0,0,0,.9); animation:fadeDown 1s .2s both; margin-bottom:.4rem; }
+.hero-sub { font-family:'Cinzel Decorative',serif; font-size:clamp(.85rem,2.5vw,1.3rem); color:var(--texte-pale); letter-spacing:.1em; animation:fadeDown 1s .4s both; margin-bottom:1.8rem; }
+.hero-desc { font-size:clamp(1rem,2.5vw,1.2rem); font-style:italic; color:var(--texte); max-width:580px; line-height:1.7; animation:fadeDown 1s .6s both; margin-bottom:2.5rem; }
+.hero-badges { display:flex; flex-wrap:wrap; gap:.7rem; justify-content:center; animation:fadeDown 1s .8s both; margin-bottom:3rem; }
+.badge { display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .9rem; border:1px solid var(--bord-vif); background:rgba(255,255,255,.03); font-family:'Cinzel',serif; font-size:.65rem; letter-spacing:.12em; color:var(--texte-pale); text-decoration:none; transition:color .2s, border-color .2s, background .2s; cursor:pointer; }
+.badge:hover { color:var(--or); border-color:var(--or); background:rgba(201,168,76,.06); }
+.hero-scroll { animation:fadeDown 1s 1s both; display:flex; flex-direction:column; align-items:center; gap:.5rem; color:var(--texte-pale); font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.2em; }
+.scroll-arrow { width:1px; height:36px; background:linear-gradient(to bottom,var(--sang),transparent); animation:arrow-drop 2s ease-in-out infinite; }
+@keyframes arrow-drop { 0%,100%{transform:scaleY(1);opacity:.6} 50%{transform:scaleY(1.3);opacity:1} }
+
+/* ── SÉPARATEUR ── */
+.sep { display:flex; align-items:center; gap:1.5rem; margin:3.5rem 0 2.5rem; opacity:.5; }
+.sep::before,.sep::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--sang),transparent); }
+.sep-icon { font-size:1.1rem; }
+
+/* ── SECTIONS GÉNÉRALES ── */
+section { padding:1.5rem 0 3.5rem; }
+.section-label { font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.4em; color:var(--sang-vif); text-transform:uppercase; margin-bottom:.5rem; }
+.section-title { font-family:'Cinzel Decorative',serif; font-size:clamp(1.3rem,4vw,2rem); color:var(--or); text-shadow:0 0 20px rgba(201,168,76,.3); margin-bottom:.8rem; line-height:1.3; }
+.section-intro { font-size:1.05rem; font-style:italic; color:var(--texte-pale); max-width:580px; line-height:1.7; margin-bottom:2.5rem; }
+
+/* ── STEPS ── */
+.steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:1.2rem; margin-bottom:2.5rem; }
+.step { background:var(--charbon); border:1px solid var(--bord); padding:1.6rem 1.3rem; position:relative; overflow:hidden; transition:border-color .3s,transform .3s; }
+.step::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; background:linear-gradient(90deg,var(--sang),transparent); transform:scaleX(0); transform-origin:left; transition:transform .4s; }
+.step:hover { border-color:var(--bord-vif); transform:translateY(-3px); }
+.step:hover::before { transform:scaleX(1); }
+.step-num { font-family:'Cinzel Decorative',serif; font-size:2.2rem; color:rgba(139,0,0,.2); position:absolute; top:.6rem;right:.8rem; line-height:1; }
+.step-icon { font-size:1.6rem; margin-bottom:.7rem; display:block; }
+.step-title { font-family:'Cinzel',serif; font-size:.8rem; letter-spacing:.1em; color:var(--or-pale); margin-bottom:.5rem; }
+.step-desc { font-size:.92rem; line-height:1.6; color:var(--texte); }
+.step-cmd { display:inline-block; margin-top:.6rem; font-family:'Courier New',monospace; font-size:.78rem; color:var(--or); background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.2); padding:.2rem .5rem; margin-right:.3rem; }
+
+/* ── COMMANDES ── */
+.commands { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:.9rem; }
+.cmd-card { background:var(--charbon); border:1px solid var(--bord); padding:1.1rem 1.3rem; display:flex; gap:.9rem; align-items:flex-start; transition:border-color .2s; }
+.cmd-card:hover { border-color:var(--bord-vif); }
+.cmd-tag { font-family:'Courier New',monospace; font-size:.8rem; color:var(--or); background:rgba(201,168,76,.08); border:1px solid rgba(201,168,76,.2); padding:.25rem .6rem; white-space:nowrap; flex-shrink:0; }
+.cmd-tag.clickable { cursor:pointer; transition:background .2s, color .2s; }
+.cmd-tag.clickable:hover { background:rgba(201,168,76,.18); color:var(--or-pale); }
+.cmd-title { font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.08em; color:var(--texte); margin-bottom:.25rem; }
+.cmd-desc { font-size:.88rem; color:var(--texte-pale); line-height:1.5; }
+
+/* ── MONSTRES ── */
+.raretes { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:1.1rem; }
+.rarete-card { padding:1.3rem; border:1px solid; background:var(--charbon); }
+.rarete-commun     { border-color:#3a3a3a; }
+.rarete-rare       { border-color:#1a3a5a; }
+.rarete-epique     { border-color:#3a1a5a; }
+.rarete-legendaire { border-color:#5a3a0a; }
+.rarete-primordial { border-color:#5a0a0a; }
+.rarete-icon { font-size:1.3rem; margin-bottom:.5rem; display:block; }
+.rarete-name { font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.12em; margin-bottom:.4rem; }
+.rarete-commun     .rarete-name { color:#aaa; }
+.rarete-rare       .rarete-name { color:var(--spectral); }
+.rarete-epique     .rarete-name { color:var(--epique); }
+.rarete-legendaire .rarete-name { color:var(--legendaire); }
+.rarete-primordial .rarete-name { color:var(--primordial); }
+.rarete-desc { font-size:.87rem; color:var(--texte-pale); line-height:1.5; }
+.rarete-fuite { display:inline-block; margin-top:.5rem; font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.1em; padding:.15rem .45rem; }
+.rarete-commun     .rarete-fuite { background:rgba(100,100,100,.15); color:#aaa; border:1px solid #3a3a3a; }
+.rarete-rare       .rarete-fuite { background:rgba(74,122,138,.15); color:var(--spectral); border:1px solid #1a3a5a; }
+.rarete-epique     .rarete-fuite { background:rgba(155,89,182,.15); color:var(--epique); border:1px solid #3a1a5a; }
+.rarete-legendaire .rarete-fuite { background:rgba(243,156,18,.15); color:var(--legendaire); border:1px solid #5a3a0a; }
+.rarete-primordial .rarete-fuite { background:rgba(231,76,60,.15); color:var(--primordial); border:1px solid #5a0a0a; }
+
+/* ── PROGRESSION ── */
+.progression-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.3rem; }
+.prog-card { background:var(--charbon); border:1px solid var(--bord); padding:1.5rem; }
+.prog-icon { font-size:1.8rem; margin-bottom:.7rem; display:block; }
+.prog-title { font-family:'Cinzel',serif; font-size:.75rem; letter-spacing:.12em; color:var(--or-pale); margin-bottom:.5rem; }
+.prog-desc { font-size:.92rem; color:var(--texte); line-height:1.6; }
+.prog-list { margin-top:.5rem; list-style:none; display:flex; flex-direction:column; gap:.25rem; }
+.prog-list li { font-size:.88rem; color:var(--texte-pale); padding-left:.9rem; position:relative; line-height:1.5; }
+.prog-list li::before { content:'—'; position:absolute; left:0; color:var(--sang-vif); }
+
+/* ── LOOTS ── */
+.loot-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; }
+.loot-card { background:var(--charbon); border:1px solid var(--bord); padding:1.3rem; text-align:center; position:relative; overflow:hidden; }
+.loot-card.primordial { border-color:rgba(231,76,60,.4); }
+.loot-card.primordial::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at top,rgba(231,76,60,.06),transparent 70%); }
+.loot-card.legendaire { border-color:rgba(243,156,18,.3); }
+.loot-card.epique     { border-color:rgba(155,89,182,.3); }
+.loot-emoji { font-size:1.8rem; display:block; margin-bottom:.5rem; }
+.loot-name { font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.08em; margin-bottom:.35rem; }
+.loot-card.primordial .loot-name { color:var(--primordial); }
+.loot-card.legendaire .loot-name { color:var(--legendaire); }
+.loot-card.epique     .loot-name { color:var(--epique); }
+.loot-stat { font-size:.95rem; color:var(--sang-vif); font-weight:600; margin-bottom:.35rem; }
+.loot-source { font-size:.8rem; color:var(--texte-pale); font-style:italic; }
+.loot-chance { display:inline-block; margin-top:.45rem; font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.1em; padding:.15rem .45rem; }
+.loot-card.primordial .loot-chance { background:rgba(231,76,60,.15); color:var(--primordial); border:1px solid rgba(231,76,60,.3); }
+.loot-card.legendaire .loot-chance { background:rgba(243,156,18,.1); color:var(--legendaire); border:1px solid rgba(243,156,18,.25); }
+.loot-card.epique     .loot-chance { background:rgba(155,89,182,.1); color:var(--epique); border:1px solid rgba(155,89,182,.25); }
+
+/* ── BOUTIQUE TABS ── */
+.tabs { display:flex; border:1px solid var(--bord); margin-bottom:2rem; overflow:hidden; }
+.tab { flex:1; padding:.85rem .5rem; background:var(--charbon); border:none; color:var(--texte-pale); font-family:'Cinzel Decorative',serif; font-size:.68rem; letter-spacing:.07em; cursor:pointer; transition:all .2s; border-right:1px solid var(--bord); position:relative; }
+.tab:last-child { border-right:none; }
+.tab:hover { color:var(--texte); background:var(--cendre); }
+.tab.active { background:var(--cendre); color:var(--or); }
+.tab.active::after { content:''; position:absolute; bottom:0;left:0;right:0; height:2px; background:var(--sang); }
+.tab-icon { font-size:1rem; display:block; margin-bottom:.2rem; }
+.boutique-section { display:none; }
+.boutique-section.active { display:block; }
+
+/* ── SHOP GRID ── */
+.shop-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1.1rem; }
+.shop-card { background:var(--charbon); border:1px solid var(--bord); padding:1.3rem; position:relative; overflow:hidden; transition:border-color .2s,transform .2s; }
+.shop-card::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; background:var(--sang); transform:scaleX(0); transform-origin:left; transition:transform .3s; }
+.shop-card:hover { border-color:#3a2a2a; transform:translateY(-2px); }
+.shop-card:hover::before { transform:scaleX(1); }
+.shop-card.loot-only { border-color:#3a2040; opacity:.75; }
+.shop-card.loot-only:hover { opacity:1; }
+.shop-emoji { font-size:1.8rem; display:block; margin-bottom:.7rem; }
+.shop-name { font-family:'Cinzel Decorative',serif; font-size:.72rem; color:var(--or-pale); letter-spacing:.06em; margin-bottom:.4rem; line-height:1.4; }
+.shop-stat { font-size:1rem; color:var(--sang-vif); font-weight:600; margin-bottom:.7rem; }
+.shop-price { display:inline-flex; align-items:center; gap:.3rem; background:rgba(139,0,0,.15); border:1px solid rgba(139,0,0,.3); padding:.25rem .6rem; font-size:.88rem; color:var(--or); font-weight:600; }
+.shop-cmd { display:block; margin-top:.8rem; font-family:'Courier New',monospace; font-size:.72rem; color:var(--texte-pale); background:rgba(255,255,255,.03); padding:.35rem .55rem; border-left:2px solid var(--sang); cursor:pointer; transition:color .2s,background .2s; user-select:all; }
+.shop-cmd:hover { color:var(--or-pale); background:rgba(255,255,255,.06); }
+.loot-badge { position:absolute; top:.6rem;right:.6rem; font-size:.56rem; font-family:'Cinzel Decorative',serif; letter-spacing:.1em; color:var(--epique); border:1px solid var(--epique); padding:.12rem .35rem; }
+.shop-section-title { font-family:'Cinzel',serif; font-size:.7rem; letter-spacing:.3em; color:var(--texte-pale); text-transform:uppercase; margin-bottom:1.2rem; display:flex; align-items:center; gap:.8rem; }
+.shop-section-title::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--bord),transparent); }
+
+/* ── STREAMER ── */
+.streamer-box { background:var(--charbon); border:1px solid var(--bord-vif); padding:2.2rem; position:relative; overflow:hidden; }
+.streamer-box::before { content:''; position:absolute; top:0;left:0;right:0; height:3px; background:linear-gradient(90deg,var(--sang),var(--or),var(--sang)); }
+.streamer-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.3rem; margin-top:1.3rem; }
+.sf { display:flex; gap:.9rem; align-items:flex-start; }
+.sf-icon { font-size:1.3rem; flex-shrink:0; }
+.sf-title { font-family:'Cinzel',serif; font-size:.72rem; letter-spacing:.1em; color:var(--or-pale); margin-bottom:.25rem; }
+.sf-desc { font-size:.88rem; color:var(--texte-pale); line-height:1.5; }
+
+/* ── TOAST ── */
+.toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(20px); background:var(--sang); color:#fff; padding:.5rem 1.3rem; font-family:'Cinzel Decorative',serif; font-size:.72rem; letter-spacing:.08em; opacity:0; transition:opacity .2s,transform .2s; pointer-events:none; z-index:200; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ── FOOTER ── */
+.footer { border-top:1px solid var(--bord); padding:2.5rem 0; text-align:center; }
+.footer-logo { font-family:'Cinzel Decorative',serif; font-size:1.2rem; color:var(--or); margin-bottom:.4rem; text-shadow:0 0 20px rgba(201,168,76,.3); }
+.footer-by { font-size:.9rem; color:var(--texte-pale); font-style:italic; margin-bottom:1.3rem; }
+.footer-links { display:flex; gap:1.3rem; justify-content:center; flex-wrap:wrap; }
+.footer-link { font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.15em; color:var(--texte-pale); text-decoration:none; border-bottom:1px solid transparent; transition:color .2s,border-color .2s; }
+.footer-link:hover { color:var(--or); border-color:var(--or); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+.reveal { opacity:0; transform:translateY(28px); transition:opacity .7s ease,transform .7s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ── MOBILE ── */
+@media(max-width:640px){
+  .nav-links{display:none}
+  .steps,.raretes,.commands,.progression-grid,.loot-grid,.streamer-grid,.shop-grid{grid-template-columns:1fr}
+  .hero{padding:5rem 1rem 3rem}
+  .tabs .tab{font-size:.55rem; padding:.7rem .3rem}
+  .streamer-box{padding:1.4rem}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="particles" id="particles"></div>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo">💀 Captain RPG</div>
+  <ul class="nav-links">
+    <li><a href="#jouer">Comment jouer</a></li>
+    <li><a href="#monstres">Monstres</a></li>
+    <li><a href="#progression">Progression</a></li>
+    <li><a href="#loots">Loots</a></li>
+    <li><a href="#boutique">Boutique</a></li>
+    <li><a href="#streamers">Streamers</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <span class="hero-rune">💀</span>
+  <p class="hero-eyebrow">Un jeu de rôle textuel pour</p>
+  <h1 class="hero-title">Captain RPG</h1>
+  <p class="hero-sub">Le Chat Twitch comme Champ de Bataille</p>
+  <p class="hero-desc">Plongez dans un donjon sombre sans quitter le chat. Affrontez des créatures maudites, amassez des points, forgez votre légende — tout ça avec de simples commandes Twitch.</p>
+  <div class="hero-badges">
+    <a href="#jouer"       class="badge">💬 Jeu dans le Chat</a>
+    <a href="#monstres"    class="badge">⚔️ 23 Monstres</a>
+    <a href="#boutique"    class="badge">🏪 Boutique</a>
+    <a href="#progression" class="badge">📊 Niveaux & XP</a>
+    <a href="#loots"       class="badge">✨ Loots Rares</a>
+    <a href="#monstres"    class="badge">💠 Boss Primordial</a>
+  </div>
+  <div class="hero-scroll">
+    <span>DÉCOUVRIR</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<div class="wrap">
+
+<!-- ── COMMENT JOUER ── -->
+<div class="sep"><span class="sep-icon">🔍</span></div>
+<section id="jouer">
+  <div class="reveal">
+    <p class="section-label">Guide du Survivant</p>
+    <h2 class="section-title">Comment Jouer</h2>
+    <p class="section-intro">Tout se passe dans le chat Twitch. Pas d'inscription, pas d'application — tapez une commande et l'aventure commence.</p>
+  </div>
+  <div class="steps reveal">
+    <div class="step">
+      <span class="step-num">1</span>
+      <span class="step-icon">🔍</span>
+      <div class="step-title">Explorer</div>
+      <div class="step-desc">Lancez une exploration pour débusquer une créature des ténèbres. Un monstre surgit aléatoirement — du squelette de basse cour au boss Primordial.</div>
+      <span class="step-cmd">!recherche</span>
+    </div>
+    <div class="step">
+      <span class="step-num">2</span>
+      <span class="step-icon">⚔️</span>
+      <div class="step-title">Combattre ou Fuir</div>
+      <div class="step-desc">Affrontez le monstre pour gagner points et XP — ou tentez de fuir. Plus le monstre est rare, plus la fuite est difficile.</div>
+      <span class="step-cmd">!combattre</span>
+      <span class="step-cmd">!fuir</span>
+    </div>
+    <div class="step">
+      <span class="step-num">3</span>
+      <span class="step-icon">🏪</span>
+      <div class="step-title">S'équiper</div>
+      <div class="step-desc">Dépensez vos points en boutique pour acheter armes, armures et potions. Un meilleur équipement = plus de victoires.</div>
+      <span class="step-cmd">!boutique</span>
+      <span class="step-cmd">!acheter</span>
+    </div>
+    <div class="step">
+      <span class="step-num">4</span>
+      <span class="step-icon">📊</span>
+      <div class="step-title">Progresser</div>
+      <div class="step-desc">Gagnez de l'XP, montez de niveau, augmentez vos PV. Suivez vos stats et comparez-vous aux autres viewers.</div>
+      <span class="step-cmd">!stats</span>
+      <span class="step-cmd">!top</span>
+    </div>
+  </div>
+  <div class="reveal" style="margin-top:.5rem">
+    <p class="section-label" style="margin-bottom:1rem">Toutes les commandes</p>
+    <div class="commands">
+      <div class="cmd-card"><span class="cmd-tag clickable" onclick="copier(this)">!recherche</span><div><div class="cmd-title">Explorer</div><div class="cmd-desc">Fait apparaître un monstre aléatoire. Cooldown 30s.</div></div></div>
+      <div class="cmd-card"><span class="cmd-tag clickable" onclick="copier(this)">!combattre</span><div><div class="cmd-title">Attaquer</div><div class="cmd-desc">Lance le combat. Résultat selon dégâts, défense et chance.</div></div></div>
+      <div class="cmd-card"><span class="cmd-tag clickable" onclick="copier(this)">!fuir</span><div><div class="cmd-title">S'échapper</div><div class="cmd-desc">80% Commun · 60% Rare · 35% Épique · 50% Légendaire · 10% Primordial.</div></div></div>
+      <div class="cmd-card"><span class="cmd-tag clickable" onclick="copier(this)">!stats</span><div><div class="cmd-title">Mes statistiques</div><div class="cmd-desc">PV, dégâts, défense, niveau, XP, équipement, V/D.</div></div></div>
+      <div class="cmd-card"><span class="cmd-tag clickable" onclick="copier(this)">!boutique</span><div><div class="cmd-title">Ouvrir la boutique</div><div class="cmd-desc">Envoie le lien. Sous-commandes : armes / armures / potions.</div></div></div>
+      <div class="cmd-card"><span class="cmd-tag clickable" onclick="copier(this)">!acheter &lt;item&gt;</span><div><div class="cmd-title">Acheter</div><div class="cmd-desc">Ex : !acheter epee_maudite</div></div></div>
+      <div class="cmd-card"><span class="cmd-tag clickable" onclick="copier(this)">!top</span><div><div class="cmd-title">Classement</div><div class="cmd-desc">Top 5 des joueurs les plus riches du stream.</div></div></div>
+      <div class="cmd-card"><span class="cmd-tag clickable" onclick="copier(this)">!rpghelp</span><div><div class="cmd-title">Aide</div><div class="cmd-desc">Rappel rapide de toutes les commandes.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MONSTRES ── -->
+<div class="sep"><span class="sep-icon">💀</span></div>
+<section id="monstres">
+  <div class="reveal">
+    <p class="section-label">Les Créatures des Ténèbres</p>
+    <h2 class="section-title">23 Monstres à Affronter</h2>
+    <p class="section-intro">Les apparitions sont totalement aléatoires. Du squelette de basse cour au boss absolu — vous ne savez jamais ce qui vous attend.</p>
+  </div>
+  <div class="raretes reveal">
+    <div class="rarete-card rarete-commun">
+      <span class="rarete-icon">⚪</span>
+      <div class="rarete-name">COMMUN — 7 monstres</div>
+      <div class="rarete-desc">Âme Errante, Squelette Maudit, Crâne Enflammé, Zombie Putréfié, Spectre des Tombes, Corbeau de Sang, Araignée Nécrotique</div>
+      <span class="rarete-fuite">🏃 FUITE 80%</span>
+    </div>
+    <div class="rarete-card rarete-rare">
+      <span class="rarete-icon">🔵</span>
+      <div class="rarete-name">RARE — 6 monstres</div>
+      <div class="rarete-desc">Chevalier Mort-Vivant, Banshee Hurlante, Démon Mineur, Loup Fantôme, Golem de Cendres, Sorcier Corrompu</div>
+      <span class="rarete-fuite">🏃 FUITE 60%</span>
+    </div>
+    <div class="rarete-card rarete-epique">
+      <span class="rarete-icon">🟣</span>
+      <div class="rarete-name">ÉPIQUE — 5 monstres</div>
+      <div class="rarete-desc">Archidémon, Liche Ancienne, Nécromancien Suprême, Ombre Dévorante, Revenant Maudit. <em>Drop : Potion de Soin (15%)</em></div>
+      <span class="rarete-fuite">🏃 FUITE 35%</span>
+    </div>
+    <div class="rarete-card rarete-legendaire">
+      <span class="rarete-icon">✨</span>
+      <div class="rarete-name">LÉGENDAIRE — 4 monstres</div>
+      <div class="rarete-desc">Seigneur des Ombres, Dragon Maudit, Démon Abyssal, Roi des Damnés. <em>Arme unique en drop (35%)</em></div>
+      <span class="rarete-fuite">🏃 FUITE 50%</span>
+    </div>
+    <div class="rarete-card rarete-primordial">
+      <span class="rarete-icon">💠</span>
+      <div class="rarete-name">PRIMORDIAL — 1 boss unique</div>
+      <div class="rarete-desc"><strong style="color:var(--primordial)">La Mort Elle-Même.</strong> 300 PV · 95 dégâts. La Faux de la Mort garantie à la victoire.</div>
+      <span class="rarete-fuite">🏃 FUITE 10% — PRESQUE IMPOSSIBLE</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROGRESSION ── -->
+<div class="sep"><span class="sep-icon">📊</span></div>
+<section id="progression">
+  <div class="reveal">
+    <p class="section-label">Croissance & Survie</p>
+    <h2 class="section-title">Système de Progression</h2>
+    <p class="section-intro">Vos données sont sauvegardées — revenez demain, votre personnage est intact.</p>
+  </div>
+  <div class="progression-grid reveal">
+    <div class="prog-card">
+      <span class="prog-icon">⚔️</span>
+      <div class="prog-title">STATS DE COMBAT</div>
+      <div class="prog-desc">Chaque joueur démarre avec 80 PV et 8 dégâts. Combat tour par tour jusqu'à ce que l'un des deux tombe.</div>
+      <ul class="prog-list"><li>Armes → augmentent vos dégâts</li><li>Armures → réduisent les dégâts reçus</li><li>Potions → restaurent des PV</li></ul>
+    </div>
+    <div class="prog-card">
+      <span class="prog-icon">🌟</span>
+      <div class="prog-title">NIVEAUX & XP</div>
+      <div class="prog-desc">Chaque victoire rapporte de l'XP. À chaque niveau, vos PV max augmentent progressivement.</div>
+      <ul class="prog-list"><li>Niveau 2 → +4 PV max</li><li>Niveau 3 → +5 PV max</li><li>Niveau 4 → +6 PV max…</li></ul>
+    </div>
+    <div class="prog-card">
+      <span class="prog-icon">💀</span>
+      <div class="prog-title">LA MORT</div>
+      <div class="prog-desc">Tomber à 0 PV vous immobilise. Pour vous relever :</div>
+      <ul class="prog-list"><li>Attendre 30 minutes (auto)</li><li>Acheter une potion de soin</li><li>0 points = plus de jeu possible</li></ul>
+    </div>
+    <div class="prog-card">
+      <span class="prog-icon">⏱️</span>
+      <div class="prog-title">POINTS DE PRÉSENCE</div>
+      <div class="prog-desc">Même sans jouer, rester dans le stream rapporte des points.</div>
+      <ul class="prog-list"><li>+5 points toutes les 5 minutes</li><li>Automatique, aucune commande</li><li>Permet de remonter si tout est perdu</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── LOOTS ── -->
+<div class="sep"><span class="sep-icon">✨</span></div>
+<section id="loots">
+  <div class="reveal">
+    <p class="section-label">Armes Introuvables en Boutique</p>
+    <h2 class="section-title">Loots Légendaires</h2>
+    <p class="section-intro">Ces armes ne s'achètent pas. Elles se méritent en vainquant les créatures les plus puissantes des ténèbres.</p>
+  </div>
+  <div class="loot-grid reveal">
+    <div class="loot-card legendaire"><span class="loot-emoji">🌑</span><div class="loot-name">GRIFFE DES OMBRES</div><div class="loot-stat">+55 dégâts</div><div class="loot-source">Seigneur des Ombres</div><span class="loot-chance">DROP 35%</span></div>
+    <div class="loot-card legendaire"><span class="loot-emoji">🐲</span><div class="loot-name">SOUFFLE DU DRAGON</div><div class="loot-stat">+62 dégâts</div><div class="loot-source">Dragon Maudit</div><span class="loot-chance">DROP 35%</span></div>
+    <div class="loot-card legendaire"><span class="loot-emoji">🔱</span><div class="loot-name">LANCE ABYSSALE</div><div class="loot-stat">+58 dégâts</div><div class="loot-source">Démon Abyssal</div><span class="loot-chance">DROP 35%</span></div>
+    <div class="loot-card legendaire"><span class="loot-emoji">👑</span><div class="loot-name">ÉPÉE DU ROI DES DAMNÉS</div><div class="loot-stat">+66 dégâts</div><div class="loot-source">Roi des Damnés</div><span class="loot-chance">DROP 35%</span></div>
+    <div class="loot-card primordial"><span class="loot-emoji">⚰️</span><div class="loot-name">FAUX DE LA MORT</div><div class="loot-stat">+80 dégâts</div><div class="loot-source">La Mort Elle-Même</div><span class="loot-chance">GARANTI — PRIMORDIAL</span></div>
+    <div class="loot-card epique"><span class="loot-emoji">❤️</span><div class="loot-name">POTION DE SOIN</div><div class="loot-stat">+20 PV</div><div class="loot-source">Tout monstre Épique</div><span class="loot-chance">DROP 15%</span></div>
+  </div>
+</section>
+
+<!-- ── BOUTIQUE ── -->
+<div class="sep"><span class="sep-icon">🏪</span></div>
+<section id="boutique">
+  <div class="reveal">
+    <p class="section-label">Marchands des Ténèbres</p>
+    <h2 class="section-title">Boutique</h2>
+    <p class="section-intro">Dépensez vos points pour vous équiper. Cliquez sur une commande pour la copier, collez-la dans le chat Twitch.</p>
+  </div>
+  <div class="reveal">
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('armes',this)"><span class="tab-icon">⚔️</span>Armes</button>
+      <button class="tab" onclick="showTab('armures',this)"><span class="tab-icon">🛡️</span>Armures</button>
+      <button class="tab" onclick="showTab('potions',this)"><span class="tab-icon">🧪</span>Potions</button>
+      <button class="tab" onclick="showTab('loots-shop',this)"><span class="tab-icon">✨</span>Loots</button>
+    </div>
+
+    <!-- ARMES -->
+    <div class="boutique-section active" id="tab-armes">
+      <p class="shop-section-title">⚔️ Armes achetables — augmentent vos dégâts</p>
+      <div class="shop-grid">
+        <div class="shop-card"><span class="shop-emoji">🔪</span><div class="shop-name">Dague Rouillée</div><div class="shop-stat">+4 dégâts</div><span class="shop-price">💰 40 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter dague_rouillée</span></div>
+        <div class="shop-card"><span class="shop-emoji">🪵</span><div class="shop-name">Gourdin Clouté</div><div class="shop-stat">+7 dégâts</div><span class="shop-price">💰 65 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter gourdin_cloute</span></div>
+        <div class="shop-card"><span class="shop-emoji">🗡️</span><div class="shop-name">Épée Maudite</div><div class="shop-stat">+12 dégâts</div><span class="shop-price">💰 100 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter epee_maudite</span></div>
+        <div class="shop-card"><span class="shop-emoji">🦴</span><div class="shop-name">Lance d'Ossements</div><div class="shop-stat">+18 dégâts</div><span class="shop-price">💰 150 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter lance_ossements</span></div>
+        <div class="shop-card"><span class="shop-emoji">🪓</span><div class="shop-name">Hache Infernale</div><div class="shop-stat">+24 dégâts</div><span class="shop-price">💰 200 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter hache_infernale</span></div>
+        <div class="shop-card"><span class="shop-emoji">🏹</span><div class="shop-name">Arc Spectral</div><div class="shop-stat">+30 dégâts</div><span class="shop-price">💰 260 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter arc_spectral</span></div>
+        <div class="shop-card"><span class="shop-emoji">🔮</span><div class="shop-name">Sceptre des Ombres</div><div class="shop-stat">+37 dégâts</div><span class="shop-price">💰 330 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter sceptre_ombre</span></div>
+        <div class="shop-card"><span class="shop-emoji">⚔️</span><div class="shop-name">Épée Abyssale</div><div class="shop-stat">+46 dégâts</div><span class="shop-price">💰 420 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter epee_abyssale</span></div>
+      </div>
+    </div>
+
+    <!-- ARMURES -->
+    <div class="boutique-section" id="tab-armures">
+      <p class="shop-section-title">🛡️ Armures — réduisent les dégâts reçus</p>
+      <div class="shop-grid">
+        <div class="shop-card"><span class="shop-emoji">🩸</span><div class="shop-name">Suaire Maudit</div><div class="shop-stat">-3 dégâts reçus</div><span class="shop-price">💰 50 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter suaire_maudit</span></div>
+        <div class="shop-card"><span class="shop-emoji">🛡️</span><div class="shop-name">Armure d'Os</div><div class="shop-stat">-8 dégâts reçus</div><span class="shop-price">💰 130 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter armure_os</span></div>
+        <div class="shop-card"><span class="shop-emoji">🌑</span><div class="shop-name">Cuirasse des Ombres</div><div class="shop-stat">-16 dégâts reçus</div><span class="shop-price">💰 300 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter cuirasse_ombre</span></div>
+        <div class="shop-card"><span class="shop-emoji">🌫️</span><div class="shop-name">Manteau du Spectre</div><div class="shop-stat">-22 dégâts reçus</div><span class="shop-price">💰 380 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter manteau_spectre</span></div>
+        <div class="shop-card"><span class="shop-emoji">🖤</span><div class="shop-name">Plaque Abyssale</div><div class="shop-stat">-30 dégâts reçus</div><span class="shop-price">💰 460 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter plaque_abyssale</span></div>
+        <div class="shop-card"><span class="shop-emoji">💎</span><div class="shop-name">Aegis Abyssal</div><div class="shop-stat">-38 dégâts reçus</div><span class="shop-price">💰 520 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter aegis_abyssal</span></div>
+      </div>
+    </div>
+
+    <!-- POTIONS -->
+    <div class="boutique-section" id="tab-potions">
+      <p class="shop-section-title">🧪 Potions — restaurent des PV, ressuscitent si 0 PV</p>
+      <div class="shop-grid">
+        <div class="shop-card"><span class="shop-emoji">❤️</span><div class="shop-name">Potion de Soin</div><div class="shop-stat">+20 PV</div><span class="shop-price">💰 30 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter potion_soin</span></div>
+        <div class="shop-card"><span class="shop-emoji">💉</span><div class="shop-name">Potion Supérieure</div><div class="shop-stat">+50 PV</div><span class="shop-price">💰 70 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter potion_soin_sup</span></div>
+        <div class="shop-card"><span class="shop-emoji">🧪</span><div class="shop-name">Élixir de Sang</div><div class="shop-stat">+130 PV</div><span class="shop-price">💰 200 pts</span><span class="shop-cmd" onclick="copier(this)">!acheter elixir_sang</span></div>
+      </div>
+    </div>
+
+    <!-- LOOTS SHOP -->
+    <div class="boutique-section" id="tab-loots-shop">
+      <p class="shop-section-title">✨ Armes loot — ne s'achètent pas, se méritent</p>
+      <div class="shop-grid">
+        <div class="shop-card loot-only"><div class="loot-badge">LOOT 35%</div><span class="shop-emoji">🌑</span><div class="shop-name">Griffe des Ombres</div><div class="shop-stat">+55 dégâts</div><span class="shop-price" style="background:rgba(155,89,182,.15);border-color:rgba(155,89,182,.3);color:#b080e0;">👑 Seigneur des Ombres</span></div>
+        <div class="shop-card loot-only"><div class="loot-badge">LOOT 35%</div><span class="shop-emoji">🐲</span><div class="shop-name">Souffle du Dragon</div><div class="shop-stat">+62 dégâts</div><span class="shop-price" style="background:rgba(155,89,182,.15);border-color:rgba(155,89,182,.3);color:#b080e0;">👑 Dragon Maudit</span></div>
+        <div class="shop-card loot-only"><div class="loot-badge">LOOT 35%</div><span class="shop-emoji">🔱</span><div class="shop-name">Lance Abyssale</div><div class="shop-stat">+58 dégâts</div><span class="shop-price" style="background:rgba(155,89,182,.15);border-color:rgba(155,89,182,.3);color:#b080e0;">👑 Démon Abyssal</span></div>
+        <div class="shop-card loot-only"><div class="loot-badge">LOOT 35%</div><span class="shop-emoji">👑</span><div class="shop-name">Épée du Roi des Damnés</div><div class="shop-stat">+66 dégâts</div><span class="shop-price" style="background:rgba(155,89,182,.15);border-color:rgba(155,89,182,.3);color:#b080e0;">👑 Roi des Damnés</span></div>
+        <div class="shop-card loot-only" style="border-color:#3a1010"><div class="loot-badge" style="color:var(--sang-vif);border-color:var(--sang-vif)">GARANTI</div><span class="shop-emoji">⚰️</span><div class="shop-name">Faux de la Mort</div><div class="shop-stat">+80 dégâts</div><span class="shop-price" style="background:rgba(139,0,0,.2);border-color:rgba(139,0,0,.5);color:#ff4040">💠 La Mort Elle-Même</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STREAMERS ── -->
+<div class="sep"><span class="sep-icon">🎮</span></div>
+<section id="streamers">
+  <div class="reveal">
+    <p class="section-label">Pour les Streamers</p>
+    <h2 class="section-title">Tout ce qu'il vous faut</h2>
+    <p class="section-intro">Captain RPG s'intègre naturellement à votre stream, sans interruption, sans logiciel supplémentaire à l'écran.</p>
+  </div>
+  <div class="streamer-box reveal">
+    <div class="streamer-grid">
+      <div class="sf"><span class="sf-icon">💾</span><div><div class="sf-title">SAUVEGARDE AUTO</div><div class="sf-desc">Données sauvegardées à chaque action. Relancez le bot le lendemain : tout est intact.</div></div></div>
+      <div class="sf"><span class="sf-icon">🏪</span><div><div class="sf-title">BOUTIQUE EN LIGNE</div><div class="sf-desc">Page web hébergée sur GitHub Pages, accessible depuis n'importe quel appareil.</div></div></div>
+      <div class="sf"><span class="sf-icon">🛡️</span><div><div class="sf-title">ANTI-DOUBLON</div><div class="sf-desc">Impossible de lancer deux combats simultanément, même en cas de lag.</div></div></div>
+      <div class="sf"><span class="sf-icon">🎭</span><div><div class="sf-title">COMMANDES SECRÈTES</div><div class="sf-desc">Commandes réservées au broadcaster, invisibles du chat, pour gérer votre personnage discrètement.</div></div></div>
+      <div class="sf"><span class="sf-icon">⏱️</span><div><div class="sf-title">ENGAGEMENT PASSIF</div><div class="sf-desc">Les viewers gagnent des points simplement en regardant. Parfait pour les moments calmes.</div></div></div>
+      <div class="sf"><span class="sf-icon">🔧</span><div><div class="sf-title">FACILE À MODIFIER</div><div class="sf-desc">Tous les paramètres dans un seul fichier de configuration. Tout est personnalisable.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="sep"><span class="sep-icon">💀</span></div>
+<footer class="footer reveal">
+  <div class="footer-logo">💀 Captain RPG</div>
+  <div class="footer-by">Un jeu de rôle textuel pour le chat Twitch · Créé par CaptainOS17</div>
+  <div class="footer-links">
+    <a href="https://www.twitch.tv/captain__os" class="footer-link" target="_blank">TWITCH</a>
+    <a href="#jouer" class="footer-link">COMMENT JOUER</a>
+    <a href="#boutique" class="footer-link">BOUTIQUE</a>
+  </div>
+</footer>
+
+</div><!-- /wrap -->
+
+<div class="toast" id="toast">Commande copiée !</div>
+
+<script>
+// Particules
+const container = document.getElementById('particles');
+for(let i=0;i<25;i++){
+  const p=document.createElement('div'); p.className='particle';
+  p.style.cssText=`left:${Math.random()*100}%;animation-duration:${8+Math.random()*15}s;animation-delay:${Math.random()*10}s;--dx:${(Math.random()-.5)*80}px;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;`;
+  container.appendChild(p);
+}
+
+// Reveal scroll
+const obs = new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Tabs boutique
+function showTab(name, btn) {
+  document.querySelectorAll('.boutique-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Copier commande
+function copier(el){
+  navigator.clipboard.writeText(el.textContent.trim()).then(()=>{
+    const t=document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),1800);
+  });
+}
+
+// Nav active au scroll
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll',()=>{
+  let current='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)current=s.id;});
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    a.classList.toggle('active', a.getAttribute('href')==='#'+current);
+  });
+});
+</script>
+</body>
+</html>
